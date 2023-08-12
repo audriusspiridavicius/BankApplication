@@ -1,13 +1,26 @@
+from flask import render_template
+from db_setup import app
 
-from db_setup import create_app
 
-app = create_app()
 
 
 
 @app.route('/')
 def index():
-    return 'test'
+    return render_template('homepage.html')
+
+
+
+@app.route("/clients")
+def clients():
+    return render_template('clients.html')
+
+@app.route("/banks")
+def banks():
+    return render_template('banks.html')
+
+
+
 
 
 if __name__ == "__main__":
