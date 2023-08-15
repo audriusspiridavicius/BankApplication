@@ -1,4 +1,4 @@
-from db_setup import db
+from init import db
 
 
 class BankAccount(db.Model):
@@ -8,5 +8,5 @@ class BankAccount(db.Model):
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
     bank_id = db.Column(db.Integer, db.ForeignKey('bank.id'))
 
-    bank = db.relationship('Bsnk', back_populates='accounts')
+    bank = db.relationship('Bank', back_populates='accounts')
     person = db.relationship('Person', back_populates='accounts')

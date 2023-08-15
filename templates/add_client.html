@@ -1,0 +1,27 @@
+{%extends 'structure.html'%}
+
+
+{% block maincontent%}
+<form action="{{url_for('add_client')}}" method="post">
+    {{ client.csrf_token }}
+    <div class="form-group">
+        {{client.firstname.label(class='form-control-label')}}
+        {{client.firstname(class='form-control')}}
+    </div>
+    <div class="form-group">
+        {{client.lastname.label(class='form-control-label')}}
+        {{client.lastname(class='form-control')}}
+    </div>
+    <div class="form-group">
+        {{client.pin.label(class='form-control-label')}}
+        {{client.pin(class='form-control')}}
+    </div>
+    <div class="form-group">
+        {{client.phone.label(class='form-control-label')}}
+        {{client.phone(class='form-control')}}
+    </div>
+    {{client.save}}
+
+</form>
+
+{%endblock%}

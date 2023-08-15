@@ -1,13 +1,16 @@
 {%extends 'structure.html'%}
 
 
+
+
 {%block maincontent%}
+
     {%if message|length %}
         <div class="alert alert-success" role="alert">
             {{message}}
         </div>
     {%endif%}
-    {%if banks|length %}
+    {%if accounts|length %}
         <table  class="table">
             <tr>
                 <th>
@@ -29,32 +32,32 @@
                     </div>
 
                 </th>
-                <th>Bank name</th>
-                <th>address</th>
-                <th>Bank code</th>
-                <th>Swift code</th>
+                <th>Account number</th>
+                <th>Bank</th>
+                <th>Person name</th>
                 <th>delete</th>
                 <th>Edit</th>
             </tr>
-            {%for bank in banks%}
+            {%for account in accounts%}
             <tr>
                 <td>
                     <div class="input-group mb-3">
                       <div class="input-group-prepend">
                         <div>
-                          <input type="checkbox" name="t" value="{{bank.id}}">
+                          <input type="checkbox" name="t" value="{{account.id}}">
                         </div>
                       </div>
                     </div>
                 </td>
-                <td>{{bank.name}}</td>
-                <td>{{bank.address}}</td>
-                <td>{{bank.bank_code}}</td>
-                <td>{{bank.swift_code}}</td>
+                <td>{{account.account_number}}</td>
+                <td>{{account['bank']['name']}}</td>
+                <td>{{account['person']['first_name']}}&nbsp;{{account['person']['last_name']}}</td>
                 <td>
                     <span class="delete-bank-record">
-                        <input type="hidden" id="bank{{bank.id}}" name="{{bank.id}}" value="{{bank.id}}">
-                        <a href="{{url_for('delete_bank', id=bank.id)}}"><button type="button" class="btn btn-danger delete-bank"> Delete</button></a>
+                        <input type="hidden" id="bank{{account.id}}" name="{{account.id}}" value="{{account.id}}">
+                        <a href="{{url_for('delete_account', id=account.id)}}">
+                          <button type="button" class="btn btn-danger delete-bank"> Delete</button>
+                        </a>
                     </span>
 
                 </td>
@@ -67,5 +70,5 @@
         </table>
     {%endif%}
 
-{%endblock%}
 
+{%endblock%}

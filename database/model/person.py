@@ -1,4 +1,4 @@
-from db_setup import db
+from init import db
 
 
 class Person(db.Model):
@@ -9,3 +9,9 @@ class Person(db.Model):
     phone = db.Column(db.String(20))
 
     accounts = db.relationship('BankAccount', back_populates='person')
+
+    def __init__(self, firstname, lastname, pin, phone):
+        self.first_name = firstname
+        self.last_name = lastname
+        self.pin = pin
+        self.phone = phone

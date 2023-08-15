@@ -1,4 +1,4 @@
-from db_setup import db
+from init import db
 
 
 class Bank(db.Model):
