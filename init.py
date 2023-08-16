@@ -21,3 +21,4 @@ app = create_app()
 from database.model.bank import Bank
 from database.model.bankaccount import BankAccount
 from database.model.person import Person
+from database.model.user import User

@@ -50,8 +50,8 @@
                     </div>
                 </td>
                 <td>{{account.account_number}}</td>
-                <td>{{account['bank']['name']}}</td>
-                <td>{{account['person']['first_name']}}&nbsp;{{account['person']['last_name']}}</td>
+                <td>{{account.bank.name}}</td>
+                <td>{{account.person.first_name}}&nbsp;{{account.person.last_name}}</td>
                 <td>
                     <span class="delete-bank-record">
                         <input type="hidden" id="bank{{account.id}}" name="{{account.id}}" value="{{account.id}}">
@@ -69,6 +69,6 @@
             {%endfor%}
         </table>
     {%endif%}
-
+     <a class="btn btn-outline-primary" href="{{url_for('add_account')}}" role="button">Add new Account</a>
 
 {%endblock%}

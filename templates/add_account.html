@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{%extends 'structure.html'%}
 
-</body>
-</html>
+
+{%block maincontent%}
+
+<form action="{{url_for('add_account')}}" method="post">
+    {{ bankaccount.csrf_token }}
+    <div class="form-group">
+        {{bankaccount.accountnumber.label(class='form-control-label')}}
+        {{bankaccount.accountnumber(class='form-control')}}
+    </div>
+    <div class="form-group">
+        {{bankaccount.client.label(class='form-control-label')}}
+        {{bankaccount.client(class='form-control')}}
+    </div>
+    <div class="form-group">
+        {{bankaccount.bank.label(class='form-control-label')}}
+        {{bankaccount.bank(class='form-control')}}
+    </div>
+    <div class="form-group">
+        {{bankaccount.save(class='btn btn-outline-primary')}}
+    </div>
+</form>
+
+
+
+{%endblock%}

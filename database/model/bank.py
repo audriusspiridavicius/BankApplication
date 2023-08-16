@@ -11,5 +11,7 @@ class Bank(db.Model):
     swift_code = db.Column('swiftcode', db.String(20))
 
     accounts = db.relationship('BankAccount', back_populates='bank')
+    # lastname: str(100)
 
-
+    def __str__(self):
+        return f"{self.name}"

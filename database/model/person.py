@@ -15,3 +15,6 @@ class Person(db.Model):
         self.last_name = lastname
         self.pin = pin
         self.phone = phone
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
