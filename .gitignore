@@ -1,2 +1,5 @@
 .vscode/
 *.pyc
+venv/
+static/pictures/
+*.db

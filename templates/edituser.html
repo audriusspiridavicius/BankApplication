@@ -1,0 +1,22 @@
+{%extends 'structure.html'%} {%block maincontent%}
+<img src="{{picture}}" alt="image" />
+<form
+  action="{{url_for('edituser')}}"
+  method="post"
+  enctype="multipart/form-data"
+>
+  {{ form.csrf_token }}
+
+  <div class="form-group">
+    {{form.email.label(class='form-control-label')}}
+    {{form.email(class='form-control')}}
+  </div>
+
+  <div class="form-group">
+    {{form.picture.label(class='form-control-label')}}
+    {{form.picture(class='form-control')}}
+  </div>
+  {{form.save}}
+</form>
+
+{%endblock%}

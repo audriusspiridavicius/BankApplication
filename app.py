@@ -1,3 +1,4 @@
+import secrets
 from flask import render_template, redirect, url_for, flash
 from sqlalchemy import orm
 
@@ -9,21 +10,23 @@ from forms.bankform import BankForm
 from forms.clientform import ClientForm
 from forms.userloginform import UserLoginForm
 from forms.userregistrationform import UserRegistrationForm
+from forms.edituserform import EditUserForm
 
 from init import app, db
 from database.model.bank import Bank
 from database.model.bankaccount import BankAccount
 from database.model.person import Person
-from flask_login import LoginManager, UserMixin, \
+from flask_login import LoginManager, \
     current_user, \
     logout_user, login_user, login_required
 from flask_bcrypt import Bcrypt
 
+from PIL import Image
 
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = "prisijungti"
-
+login_manager.login_view = "loginuser"
+# login_manager.login_message = ''
 
 import os
 SECRET_KEY = "opaopaopapaap123!000"
@@ -48,6 +51,7 @@ def banks(message=""):
 
 
 @app.route("/add-bank", methods=["GET", "POST"])
+@login_required
 def add_bank():
 
     bank_form = BankForm()
@@ -65,6 +69,7 @@ def add_bank():
 
 
 @app.route("/bank/delete/<int:id>")
+@login_required
 def delete_bank(id):
     bank = DbOperations.get_bank(id)
     print(bank)
@@ -80,12 +85,14 @@ def delete_bank(id):
 @app.route("/clients")
 def clients(message=""):
 
-    clients = DbOperations.get_all(Person)
+    clients = Person.query.all()
 
-    return render_template('clients.html', clients=clients, message=message)
+    return render_template('clients.html', clients=clients,
+                           message=message)
 
 
 @app.route("/client/add", methods=["GET", "POST"])
+@login_required
 def add_client():
 
     clientform = ClientForm()
@@ -103,6 +110,7 @@ def add_client():
 
 
 @app.route("/client/delete/<int:id>")
+@login_required
 def delete_client(client_id):
     message = ""
     client = Person.query.get(client_id)
@@ -141,6 +149,7 @@ def accounts():
     return render_template('accounts.html', accounts=all_accounts)
 
 @app.route("/delete_account/<int:id>")
+@login_required
 def delete_account(id):
 
     account = BankAccount.query.get(id)
@@ -200,18 +209,59 @@ def loginuser():
     if current_user.is_authenticated:
         flash("You have already logged in", 'warning')
         return redirect(url_for('index'))
-    else:
-        user = UserLoginForm()
-        if user.validate_on_submit():
-            usr = User.query.filter_by(email=user.email.data).first()
-            if usr:
-                pass_match = bcrypt.check_password_hash(usr.password, user.password.data)
-                if pass_match:
-                    login_user(usr)
-                    flash("logged in successfully!!!", 'success')
-                    return redirect(url_for('index'))
-        else:
-            return render_template('login.html', form=user)
+    user = UserLoginForm()
+    if user.validate_on_submit():
+        usr = User.query.filter_by(email=user.email.data).first()
+        if usr:
+            pass_match = bcrypt.check_password_hash(usr.password, user.password.data)
+            if pass_match:
+                login_user(usr)
+                flash("logged in successfully!!!", 'success')
+                return redirect(url_for('index'))
+        flash("Your email or password doesnt match. Please try again",'warning')
+    return render_template('login.html', form=user)
+
+def savepicture(picture):
+    pictures_folder = "static/pictures"
+    _,extension = os.path.splitext(picture.filename)
+    rnd = secrets.token_hex(10)
+    filename = rnd + extension
+    full_picture_path = os.path.join(app.root_path,pictures_folder,filename)
+    
+    pic = Image.open(picture)
+    pic.thumbnail((250,250))
+    pic.save(full_picture_path)
+    
+    return filename
+    
+
+@app.route("/edituser", methods=["POST", "GET"])
+def edituser():
+    
+    usereditform = EditUserForm()
+    
+    if usereditform.validate_on_submit():
+        if usereditform.picture.data:
+            current_user.picture = savepicture(usereditform.picture.data)
+        current_user.email = usereditform.email.data
+        db.session.commit()
+        flash("Your profile has been updated", 'success')
+        return redirect(url_for('index'))
+    usereditform.email.data = current_user.email
+    picture = url_for('static',filename=f'pictures/{current_user.picture}')
+    
+    
+    return render_template('edituser.html', form=usereditform, picture=picture)
+
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
 

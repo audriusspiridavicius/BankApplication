@@ -1,3 +1,11 @@
-.row{
-    max-width:100%;
+.row {
+  max-width: 100%;
+}
+.border-none {
+  border: 0px;
+}
+#user-email,
+#user-email:hover {
+  background-color: transparent;
+  color: initial;
 }

@@ -1,74 +1,84 @@
-{%extends 'structure.html'%}
-
-
-
-
-{%block maincontent%}
-
-    {%if message|length %}
-        <div class="alert alert-success" role="alert">
-            {{message}}
+{%extends 'structure.html'%} {%block maincontent%} {%if message|length %}
+<div class="alert alert-success" role="alert">{{message}}</div>
+{%endif%} {%if accounts|length %}
+<table class="table">
+  <tr>
+    {%if current_user.is_authenticated%}
+    <th>
+      <div class="btn-group">
+        <button type="button" class="btn btn-info">Select action</button>
+        <button
+          type="button"
+          class="btn btn-info dropdown-toggle dropdown-toggle-split"
+          data-toggle="dropdown"
+          data-bs-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        ></button>
+        <div class="dropdown-menu" id="command">
+          <a class="dropdown-item" href="#">Delete selected records</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+          <!--                        <div class="dropdown-divider"></div>-->
+          <!--                        <a class="dropdown-item" href="#">Separated link</a>-->
         </div>
+      </div>
+    </th>
+    <th>Account number</th>
     {%endif%}
-    {%if accounts|length %}
-        <table  class="table">
-            <tr>
-                <th>
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-info">Select action</button>
-                      <button type="button"
-                              class="btn btn-info dropdown-toggle dropdown-toggle-split"
-                              data-toggle="dropdown"
-                              data-bs-toggle="dropdown"
-                              aria-haspopup="true" aria-expanded="false">
-                      </button>
-                      <div class="dropdown-menu" id="command">
-                        <a class="dropdown-item" href="#">Delete selected records</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-<!--                        <div class="dropdown-divider"></div>-->
-<!--                        <a class="dropdown-item" href="#">Separated link</a>-->
-                      </div>
-                    </div>
-
-                </th>
-                <th>Account number</th>
-                <th>Bank</th>
-                <th>Person name</th>
-                <th>delete</th>
-                <th>Edit</th>
-            </tr>
-            {%for account in accounts%}
-            <tr>
-                <td>
-                    <div class="input-group mb-3">
-                      <div class="input-group-prepend">
-                        <div>
-                          <input type="checkbox" name="t" value="{{account.id}}">
-                        </div>
-                      </div>
-                    </div>
-                </td>
-                <td>{{account.account_number}}</td>
-                <td>{{account.bank.name}}</td>
-                <td>{{account.person.first_name}}&nbsp;{{account.person.last_name}}</td>
-                <td>
-                    <span class="delete-bank-record">
-                        <input type="hidden" id="bank{{account.id}}" name="{{account.id}}" value="{{account.id}}">
-                        <a href="{{url_for('delete_account', id=account.id)}}">
-                          <button type="button" class="btn btn-danger delete-bank"> Delete</button>
-                        </a>
-                    </span>
-
-                </td>
-                <td>
-                    <button type="button" class="btn btn-secondary">Edit</button>
-                </td>
-            </tr>
-
-            {%endfor%}
-        </table>
+    <th>Bank</th>
+    {%if current_user.is_authenticated%}
+    <th>Person name</th>
+    <th>delete</th>
+    <th>Edit</th>
     {%endif%}
-     <a class="btn btn-outline-primary" href="{{url_for('add_account')}}" role="button">Add new Account</a>
+  </tr>
+  {%for account in accounts%}
+  <tr>
+    {%if current_user.is_authenticated%}
+    <td>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <div>
+            <input type="checkbox" name="t" value="{{account.id}}" />
+          </div>
+        </div>
+      </div>
+    </td>
+    <td>{{account.account_number}}</td>
+    {%endif%}
+    <td>{{account.bank.name}}</td>
+    {%if current_user.is_authenticated%}
+    <td>{{account.person.first_name}}&nbsp;{{account.person.last_name}}</td>
+    <td>
+      <span class="delete-bank-record">
+        <input
+          type="hidden"
+          id="bank{{account.id}}"
+          name="{{account.id}}"
+          value="{{account.id}}"
+        />
+        <a href="{{url_for('delete_account', id=account.id)}}">
+          <button type="button" class="btn btn-danger delete-bank">
+            Delete
+          </button>
+        </a>
+      </span>
+    </td>
+    <td>
+      <button type="button" class="btn btn-secondary">Edit</button>
+    </td>
+    {%endif%}
+  </tr>
 
-{%endblock%}
+  {%endfor%}
+</table>
+{%endif%} {%if current_user.is_authenticated%}
+<a
+  class="btn btn-outline-primary"
+  href="{{url_for('add_account')}}"
+  role="button"
+>
+  Add new Account
+</a>
+{%endif%} {%endblock%}
