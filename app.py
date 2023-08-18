@@ -1,6 +1,6 @@
 import secrets
 from flask import render_template, redirect, request, url_for, flash
-from sqlalchemy import orm
+from sqlalchemy import delete, orm
 
 from database.db_operations import DbOperations
 from database.model.user import User
@@ -45,7 +45,9 @@ def index():
 @login_required
 def banks(message=""):
 
-    banks = Bank.query.all()
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page',10,type=int)
+    banks = Bank.query.filter_by().paginate(page=page, per_page=per_page)
 
     return render_template('banks.html', banks=banks, message=message)
 
@@ -109,44 +111,35 @@ def add_client():
     else:
         return render_template('add_client.html', client=clientform)
 
-
-@app.route("/client/delete/<int:id>")
+@app.route("/client/delete", methods=["POST"])
+@app.route("/client/delete/<int:id>/")
 @login_required
-def delete_client(client_id):
-    message = ""
-    client = Person.query.get(client_id)
-    if client:
-        message = f"client {client.first_name} {client.last_name} has been deleted"
-        db.session.delete(client)
+def delete_client(id=0):
+    if request.method == "POST":
+        client_ids = request.form.getlist('client')
+       
+        db.session.execute(delete(Person).where(Person.id.in_(client_ids)))
         db.session.commit()
-    return redirect(url_for("clients", message=message))
+    else:
+        client = Person.query.get(id)
+        if client:
+            flash(f"client {client.first_name} {client.last_name} has been deleted",'success')
+            db.session.delete(client)
+            db.session.commit()
+        else:
+             flash("Such Client doesn exist",'error')
+            
+    return redirect(url_for("clients"))
 
 
 @app.route("/accounts")
 def accounts():
-    # Create an SQLAlchemy session
-    # session = db.session()
-
-    # Retrieve the BankAccount object with lazy-loaded bank attribute
-    # account = session.query(BankAccount).get(1)
-
-    # Access the bank attribute, which triggers lazy loading
-    # bank_name = account.bank.name  # This should work now
-    # print(f"bank_name {bank_name}")
-    # Close the session to release resources
-    # session.close()
-
-
-
-    # with app.app_context():
-
-    # accounts = BankAccount.query.all()
-
-    # accounts = DbOperations.get_all(BankAccount)
+    page = request.args.get('page',1,type=int)
+    per_page = request.args.get('per_page',10,type=int)
 
     all_accounts = db.session.query(BankAccount)\
         .options(orm.joinedload(BankAccount.bank),
-                 orm.joinedload(BankAccount.person)).all()
+                 orm.joinedload(BankAccount.person)).paginate(page=page,per_page=per_page)
     return render_template('accounts.html', accounts=all_accounts)
 
 @app.route("/delete_account/<int:id>")
@@ -243,6 +236,9 @@ def edituser():
     
     if usereditform.validate_on_submit():
         if usereditform.picture.data:
+            if current_user.picture != 'default.png':
+                old_picture_path = os.path.join(app.root_path,'static/pictures',current_user.picture)
+                os.remove(old_picture_path)
             current_user.picture = savepicture(usereditform.picture.data)
         current_user.email = usereditform.email.data
         db.session.commit()

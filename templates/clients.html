@@ -2,26 +2,30 @@
 <div class="alert alert-success" role="alert">{{message}}</div>
 {%endif%} 
 {%if clients %}
+{%if current_user.is_authenticated%}
+<a class="justify-content-end d-flex" 
+href="{{url_for('add_client')}}"
+role="button"
+  >Add new Client</a
+>
+{%endif%} 
+<form method='post' action='{{url_for("delete_client")}}'>
 <table class="table">
   <tr>
     {%if current_user.is_authenticated%}
     <th>
       <div class="btn-group">
-        <button type="button" class="btn btn-info">Select action</button>
+        <button type="button" class="btn btn-secondary">Select action</button>
         <button
           type="button"
-          class="btn btn-info dropdown-toggle dropdown-toggle-split"
+          class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
           data-toggle="dropdown"
           data-bs-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
         ></button>
         <div class="dropdown-menu" id="command">
-          <a class="dropdown-item" href="#">Delete selected records</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a>
-          <!--                        <div class="dropdown-divider"></div>-->
-          <!--                        <a class="dropdown-item" href="#">Separated link</a>-->
+          <input class="dropdown-item" type="submit" value="Delete selected records">
         </div>
       </div>
     </th>
@@ -41,7 +45,7 @@
       <div class="input-group mb-3">
         <div class="input-group-prepend">
           <div>
-            <input type="checkbox" name="t" value="{{client.id}}" />
+            <input type="checkbox" name="client" value="{{client.id}}" />
           </div>
         </div>
       </div>
@@ -75,25 +79,20 @@
   {%endfor%}
 </table>
 {%if clients%}
-{{ clients.first }} - {{ clients.last }} of {{ clients.total }}<br>    
-{%for page in clients.iter_pages(left_edge=5, right_edge=5, left_current=1,right_current=1)%} 
-      {%if page%} 
-        {%if clients.page == page%} 
-          <ahref="{{url_for('clients',page=page)}}">{{page}}</a>
+
+  
+  {%for page in clients.iter_pages(left_edge=5, right_edge=5, left_current=1,right_current=1)%} 
+        {%if page%} 
+          {%if clients.page == page%} 
+            <ahref="{{url_for('clients',page=page)}}">{{page}}</a>
+          {%else%} 
+            <a href="{{url_for('clients',page=page)}}">{{page}}</a>
+          {% endif %} 
         {%else%} 
-          <a href="{{url_for('clients',page=page)}}">{{page}}</a>
-        {% endif %} 
-      {%else%} 
-        .. 
-      {%endif%} 
-    {%endfor%}
-    
+          .. 
+        {%endif%} 
+  {%endfor%}
+<br>{{ clients.first }} - {{ clients.last }} of {{ clients.total }}<br>     
 {%endif%}
-{%if current_user.is_authenticated%}
-<a
-  class="btn btn-outline-primary"
-  href="{{url_for('add_client')}}"
-  role="button"
-  >Add new Client</a
->
-{%endif%} {%endif%} {%endblock%}
+{%endif%} 
+{%endblock%}
