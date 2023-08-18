@@ -1,5 +1,5 @@
 import secrets
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, request, url_for, flash
 from sqlalchemy import orm
 
 from database.db_operations import DbOperations
@@ -27,7 +27,7 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "loginuser"
 # login_manager.login_message = ''
-
+# login_manager.login_message_category = 'any category you like'
 import os
 SECRET_KEY = "opaopaopapaap123!000"
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -85,8 +85,9 @@ def delete_bank(id):
 @app.route("/clients")
 def clients(message=""):
 
-    clients = Person.query.all()
-
+    page = request.args.get('page', 1, type=int)
+    clients = Person.query.filter_by().order_by(Person.id).paginate(page=page,per_page=10)
+    
     return render_template('clients.html', clients=clients,
                            message=message)
 

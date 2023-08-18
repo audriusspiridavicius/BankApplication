@@ -1,6 +1,7 @@
 {%extends 'structure.html'%} {%block maincontent%} {%if message|length %}
 <div class="alert alert-success" role="alert">{{message}}</div>
-{%endif%} {%if clients|length %}
+{%endif%} 
+{%if clients %}
 <table class="table">
   <tr>
     {%if current_user.is_authenticated%}
@@ -73,6 +74,21 @@
 
   {%endfor%}
 </table>
+{%if clients%}
+{{ clients.first }} - {{ clients.last }} of {{ clients.total }}<br>    
+{%for page in clients.iter_pages(left_edge=5, right_edge=5, left_current=1,right_current=1)%} 
+      {%if page%} 
+        {%if clients.page == page%} 
+          <ahref="{{url_for('clients',page=page)}}">{{page}}</a>
+        {%else%} 
+          <a href="{{url_for('clients',page=page)}}">{{page}}</a>
+        {% endif %} 
+      {%else%} 
+        .. 
+      {%endif%} 
+    {%endfor%}
+    
+{%endif%}
 {%if current_user.is_authenticated%}
 <a
   class="btn btn-outline-primary"
