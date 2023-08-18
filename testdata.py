@@ -30,14 +30,6 @@ def fill_accounts_table_test_data(number_of_records):
                         person_id=random.choice(p),
                         bank_id=random.choice(b)
                         )
-        # r = BankAccount(account_number=random.randint(100000000, 999999999999),
-        #                 bank=bank,
-        #                 person=person
-        #                 )
-        # r = BankAccount(account_number=random.randint(100000000, 999999999999))
-        #
-        # r.bank = bank
-        # r.person = person
         list.append(r)
     with app.app_context():
         db.session.add_all(list)
@@ -89,11 +81,7 @@ def fill_persons_table_test_data(number_of_records):
 
 if __name__ == "__main__":
 
-    # with app.app_context():
-    #     # db.session.execute('delete from banksaccount')
-    #     BankAccount.query.delete()
-    #     db.session.commit()
-    # fill_banks_table_test_data(10)
-    # fill_persons_table_test_data(20)
+    fill_banks_table_test_data(50)
+    fill_persons_table_test_data(20)
 
-    fill_accounts_table_test_data(10)
+    fill_accounts_table_test_data(25)
