@@ -10,7 +10,7 @@ class Bank(db.Model):
     bank_code = db.Column('bankcode', db.String(20))
     swift_code = db.Column('swiftcode', db.String(20))
 
-    accounts = db.relationship('BankAccount', back_populates='bank')
+    accounts = db.relationship('BankAccount', back_populates='bank', cascade='all, delete')
     # lastname: str(100)
 
     def __str__(self):
