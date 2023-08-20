@@ -71,7 +71,9 @@ role="button"
       </span>
     </td>
     <td>
-      <button type="button" class="btn btn-secondary">Edit</button>
+      <a href="{{url_for('editclient', clientid=client.id)}}">
+        <button type="button" class="btn btn-secondary">Edit</button>
+      </a>
     </td>
     {%endif%}
   </tr>

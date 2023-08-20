@@ -11,6 +11,7 @@ from forms.clientform import ClientForm
 from forms.userloginform import UserLoginForm
 from forms.userregistrationform import UserRegistrationForm
 from forms.edituserform import EditUserForm
+from forms.editclientform import EditClientForm
 
 from init import app, db
 from database.model.bank import Bank
@@ -256,6 +257,33 @@ def edituser():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/edit/client/<int:clientid>', methods=["GET","POST"])
+@login_required
+def editclient(clientid):
+    
+    edit_client_form = EditClientForm()
+    client = Person.query.get(clientid)
+    
+    if client:
+        if edit_client_form.validate_on_submit():
+            client.first_name = edit_client_form.first_name.data
+            client.last_name = edit_client_form.last_name.data
+            client.pin = edit_client_form.pin.data
+            client.phone = edit_client_form.phone.data
+            db.session.commit()
+            flash("Data was updated succesfully.",'success')
+            return redirect(url_for('clients'))
+        
+        edit_client_form.first_name.data = client.first_name
+        edit_client_form.last_name.data = client.last_name
+        edit_client_form.pin.data = client.pin
+        edit_client_form.phone.data = client.phone
+
+        return render_template('editclient.html',form=edit_client_form, client=client)
+    flash("No such Client!",'warning')        
+    return redirect(url_for('clients'))
 
 
 
