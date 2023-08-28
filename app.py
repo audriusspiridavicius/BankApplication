@@ -12,8 +12,9 @@ from forms.userloginform import UserLoginForm
 from forms.userregistrationform import UserRegistrationForm
 from forms.edituserform import EditUserForm
 from forms.editclientform import EditClientForm
+from forms.forgotpasswordform import ForgotPasswordForm
 
-from init import app, db
+from init import app, db, mail
 from database.model.bank import Bank
 from database.model.bankaccount import BankAccount
 from database.model.person import Person
@@ -212,7 +213,7 @@ def loginuser():
             if pass_match:
                 login_user(usr)
                 flash("logged in successfully!!!", 'success')
-                return redirect(url_for('index'))
+                return redirect(url_for('clients'))
         flash("Your email or password doesnt match. Please try again",'warning')
     return render_template('login.html', form=user)
 
@@ -285,7 +286,48 @@ def editclient(clientid):
     flash("No such Client!",'warning')        
     return redirect(url_for('clients'))
 
+@app.route('/reset_password', methods=["GET", "POST"])
+def reset_password_request():
+    print("op op")
+    if current_user.is_authenticated:
+        print("user is authenticated!!!")
+        logout_user()
+        redirect(url_for('reset_password_request'))
+    
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        print("form validated")
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            print("user found")
+            send_reset_password_email(user)
+            flash(f'confirmation email has been sent to {user.email}','success')
+            return redirect('/')
+        else:
+            print("error!!!!!!!!!!!!")
+            flash('Error! such user was not found!!', 'error')
+    print("nothing hapened")            
+    return render_template('resetpassword_send_email.html', form=form)
 
+
+from flask_mail import Message
+
+
+
+def send_reset_password_email(user):
+    token = user.generate_password_reset_token()
+    
+    msg = Message('Password resset',
+                  sender='el@pastas.lt',
+                  recipients=[user.email])
+    
+    msg.body = f"""To continue password reset process please click confirmation link below:{url_for('reset_password',
+    token=token, _external=True)}"""
+    mail.send(msg)
+    
+@app.route('/reset_password/<string:token>')
+def reset_password(token):
+    return '!!!'
 
 if __name__ == "__main__":
     app.run(debug=True)

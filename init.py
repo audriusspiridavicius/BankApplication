@@ -3,6 +3,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
+from flask_mail import Mail
+
 
 
 db = SQLAlchemy()
@@ -25,3 +27,14 @@ from database.model.bank import Bank
 from database.model.bankaccount import BankAccount
 from database.model.person import Person
 from database.model.user import User
+
+
+
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'caudrius.ctestacccccount99@gmail.com'
+app.config['MAIL_PASSWORD'] = 'qunxxjjtlhnnqido'
+
+mail = Mail(app)
